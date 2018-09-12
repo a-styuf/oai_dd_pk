@@ -8,7 +8,9 @@ class OaiDdSerial(serial.Serial):
         self.serial_numbers = []  # это лист возможных серийников!!! (не строка)
         self.baudrate = 115200
         self.timeout = 0.1
-        self.id = 0x00
+        self.self_id = 0x00
+        self.dev_id = 0x00
+        self.seq_num = 0
         self.port = "COM0"
         self.row_data = b""
         for key in sorted(kw):
@@ -46,7 +48,11 @@ class OaiDdSerial(serial.Serial):
     def request(self, req_type="test", data=[]):
 
         if req_type == "test":
-            data_to_bdd = "E0 B7 00 00 08 " + bdd_id[2:5] + " 0A 00 03 01 00 00 00 0E"
+            data_to_bdd = [self.dev_id, self.self_id, self.seq_num, 0x00, 0x00, len[data], 0x00, 0x00]
+        elif req_type == "test":
+            data_to_bdd = [self.dev_id, self.self_id, self.seq_num, 0x00, 0x01, len[data], 0x00, 0x00]
+        elif req_type == "test":
+            data_to_bdd = [self.dev_id, self.self_id, self.seq_num, 0x00, 0x02, len[data], 0x00, 0x00]
         #
         else:
             data_to_bdd = "E0 B7 00 00 08 " + bdd_id[2:5] + " 0A 00 03 01 00 00 00 0E"
