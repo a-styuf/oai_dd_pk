@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'oai_dd_pk.ui'
 #
-# Created by: PyQt5 UI code generator 5.5.1
+# Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(637, 476)
+        Form.resize(637, 474)
         self.GetADCButton = QtWidgets.QPushButton(Form)
         self.GetADCButton.setGeometry(QtCore.QRect(460, 10, 75, 23))
         self.GetADCButton.setObjectName("GetADCButton")
@@ -32,7 +32,7 @@ class Ui_Form(object):
         self.StateMessage.setGeometry(QtCore.QRect(10, 410, 461, 61))
         self.StateMessage.setObjectName("StateMessage")
         self.tableWidget = QtWidgets.QTableWidget(Form)
-        self.tableWidget.setGeometry(QtCore.QRect(0, 0, 291, 331))
+        self.tableWidget.setGeometry(QtCore.QRect(0, 0, 331, 341))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
