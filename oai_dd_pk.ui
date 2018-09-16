@@ -97,7 +97,7 @@
      <x>0</x>
      <y>0</y>
      <width>331</width>
-     <height>341</height>
+     <height>331</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -173,6 +173,25 @@
    <property name="text">
     <string>Циклический 
 опрос</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="GraphButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>360</y>
+     <width>121</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Графики</string>
    </property>
    <property name="checkable">
     <bool>true</bool>

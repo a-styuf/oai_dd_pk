@@ -1,12 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QMainWindow
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QMainWindow
 import data_graph
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
-
-import random
 
 
 class MainWindow(QMainWindow, data_graph.Ui_Form):
@@ -18,78 +16,50 @@ class MainWindow(QMainWindow, data_graph.Ui_Form):
         self.figure = plt.figure()
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
+        self.data = None
         # set the layout
         layout = QVBoxLayout()
         layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
         self.graphicsViews.setLayout(layout)
+        #
+        self.restartButton.clicked.connect(self.plot)
 
     def plot(self):
-        ''' plot some random stuff '''
-        # random data
-        data = [random.random() for i in range(10)]
-
+        name = []
+        data_x = []
+        data_y = []
+        if self.data:
+            for graph in self.data:
+                name.append(graph[0])
+                data_x.append(graph[1])
+                data_y.append(graph[2])
+        else:
+            name = ["Test"]
+            data_x = [[0, 1, 2, 3]]
+            data_y = [[0, 1, 4, 9]]
         # instead of ax.hold(False)
         self.figure.clear()
-
         # create an axis
-        ax = self.figure.add_subplot(111)
-
-        # discards the old graph
-        # ax.hold(False) # deprecated, see above
-
+        axes = self.figure.add_subplot(111)
         # plot data
-        ax.plot(data, '*-')
-
+        [axes.plot(data_x[i], data_y[i], line_type_from_index(i)) for i in range(len(name))]
+        axes.set_title("Данные с АЦП")
         # refresh canvas
         self.canvas.draw()
 
 
-class Window(QDialog):
-    def __init__(self, parent=None):
-        super(Window, self).__init__(parent)
+def line_type_from_index(n):
+    color_line = ["b", "r", "g", "c", "m", "y", "k"]
+    style_line = ["-", "--", "-.", ":"]
+    try:
+        color = color_line[n % len(color_line)]
+        style = style_line[n // len(color_line)]
+        # print(n % len(color_line), n // len(color_line))
+        return style + color
+    except Exception:
+        return "-r"
 
-        # a figure instance to plot on
-        self.figure = plt.figure()
-
-        # this is the Canvas Widget that displays the `figure`
-        # it takes the `figure` instance as a parameter to __init__
-        self.canvas = FigureCanvas(self.figure)
-
-        # this is the Navigation widget
-        # it takes the Canvas widget and a parent
-        self.toolbar = NavigationToolbar(self.canvas, self)
-
-        # Just some button connected to `plot` method
-        self.button = QPushButton('Plot')
-        self.button.clicked.connect(self.plot)
-
-        # set the layout
-        layout = QVBoxLayout()
-        layout.addWidget(self.toolbar)
-        layout.addWidget(self.canvas)
-        layout.addWidget(self.button)
-        self.setLayout(layout)
-
-    def plot(self):
-        ''' plot some random stuff '''
-        # random data
-        data = [random.random() for i in range(10)]
-
-        # instead of ax.hold(False)
-        self.figure.clear()
-
-        # create an axis
-        ax = self.figure.add_subplot(111)
-
-        # discards the old graph
-        # ax.hold(False) # deprecated, see above
-
-        # plot data
-        ax.plot(data, '*-')
-
-        # refresh canvas
-        self.canvas.draw()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

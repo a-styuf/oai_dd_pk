@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets, QtCore
 import oai_dd_pc_ui
+import data_graph_main
 import com_port
 
 
@@ -10,12 +11,14 @@ class MainWindow(QtWidgets.QMainWindow, oai_dd_pc_ui.Ui_Form):
         # и т.д. в файле design.py
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
-
+        # создание и подключение графиков
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.cycle_body)
-
+        # работа с COM-портом и данными с платы
         self.oai_dd = com_port.OaiDdSerial(dev_id=0x01, self_id=0x00)
-
+        # создание второго окна с графиками
+        self.GraphWindow = data_graph_main.MainWindow()
+        #
         self.GetADCButton.clicked.connect(self.get_adc)
         self.SetDACButton.clicked.connect(self.set_dac)
         self.COMOpenButton.clicked.connect(self.com_open)
