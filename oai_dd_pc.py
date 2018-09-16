@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'oai_dd_pk.ui'
+# Form implementation generated from reading ui file 'oai_dd_pc.ui'
 #
 # Created by: PyQt5 UI code generator 5.5.1
 #
@@ -32,7 +32,7 @@ class Ui_Form(object):
         self.StateMessage.setGeometry(QtCore.QRect(10, 410, 461, 61))
         self.StateMessage.setObjectName("StateMessage")
         self.tableWidget = QtWidgets.QTableWidget(Form)
-        self.tableWidget.setGeometry(QtCore.QRect(0, 0, 331, 341))
+        self.tableWidget.setGeometry(QtCore.QRect(0, 0, 331, 331))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -52,20 +52,25 @@ class Ui_Form(object):
         self.DACEntry.setGeometry(QtCore.QRect(540, 40, 71, 22))
         self.DACEntry.setMaximum(4096)
         self.DACEntry.setSingleStep(100)
-        self.DACEntry.setProperty("value", 512)
+        self.DACEntry.setProperty("value", 1000)
         self.DACEntry.setObjectName("DACEntry")
         self.CycleButton = QtWidgets.QPushButton(Form)
         self.CycleButton.setGeometry(QtCore.QRect(460, 70, 75, 41))
         self.CycleButton.setCheckable(True)
         self.CycleButton.setAutoRepeat(False)
         self.CycleButton.setObjectName("CycleButton")
+        self.GraphButton = QtWidgets.QPushButton(Form)
+        self.GraphButton.setGeometry(QtCore.QRect(10, 360, 121, 41))
+        self.GraphButton.setCheckable(False)
+        self.GraphButton.setAutoRepeat(False)
+        self.GraphButton.setObjectName("GraphButton")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "ОАИ ДД"))
         self.GetADCButton.setText(_translate("Form", "Read ADC"))
         self.SetDACButton.setText(_translate("Form", "Set DAC"))
         self.COMOpenButton.setText(_translate("Form", "COM Open"))
@@ -73,4 +78,5 @@ class Ui_Form(object):
         self.SerialNumLabel.setText(_translate("Form", "SerialNumber"))
         self.CycleButton.setText(_translate("Form", "Циклический \n"
 "опрос"))
+        self.GraphButton.setText(_translate("Form", "Графики"))
 

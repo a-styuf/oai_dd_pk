@@ -1,11 +1,11 @@
 import sys
 from PyQt5 import QtWidgets, QtCore
-import oai_dd_pc_ui
+import oai_dd_pc
 import data_graph_main
 import com_port
 
 
-class MainWindow(QtWidgets.QMainWindow, oai_dd_pc_ui.Ui_Form):
+class MainWindow(QtWidgets.QMainWindow, oai_dd_pc.Ui_Form):
     def __init__(self):
         # Это здесь нужно для доступа к переменным, методам
         # и т.д. в файле design.py
@@ -18,18 +18,16 @@ class MainWindow(QtWidgets.QMainWindow, oai_dd_pc_ui.Ui_Form):
         self.oai_dd = com_port.OaiDdSerial(dev_id=0x01, self_id=0x00)
         # создание второго окна с графиками
         self.GraphWindow = data_graph_main.MainWindow()
+        self.GraphButton.clicked.connect(self.graph_window_open)
         #
         self.GetADCButton.clicked.connect(self.get_adc)
         self.SetDACButton.clicked.connect(self.set_dac)
         self.COMOpenButton.clicked.connect(self.com_open)
-        self.CycleButton.toggled.connect(self.cycle_body)
+        self.CycleButton.toggled.connect(self.cycle_start_stop)
 
     def cycle_start_stop(self, checked):
         if checked:
-            if self.timer.isActive():
-                pass
-            else:
-                self.timer.start(1000)
+            self.timer.start(1000)
         else:
             self.timer.stop()
         pass
@@ -37,7 +35,6 @@ class MainWindow(QtWidgets.QMainWindow, oai_dd_pc_ui.Ui_Form):
     def cycle_body(self):
         self.get_adc()
         self.fill_data_table()
-        print(self.timer.remainingTime())
         self.state_check()
         pass
 
@@ -56,6 +53,7 @@ class MainWindow(QtWidgets.QMainWindow, oai_dd_pc_ui.Ui_Form):
 
     def fill_data_table(self):
         data = self.oai_dd.data.create_table_data()
+        self.GraphWindow.plot(self.oai_dd.data.graph_data)
         for row in range(len(data)):
             for column in range(len(data[row])):
                 table_item = QtWidgets.QTableWidgetItem(data[row][column])
@@ -63,7 +61,6 @@ class MainWindow(QtWidgets.QMainWindow, oai_dd_pc_ui.Ui_Form):
         pass
 
     def com_open(self):
-        print(self.SerialNumEntry.text())
         self.oai_dd.serial_numbers = [self.SerialNumEntry.text()]
         if self.oai_dd.open_id():
             self.StateMessage.setText("Подключение успешно")
@@ -77,15 +74,19 @@ class MainWindow(QtWidgets.QMainWindow, oai_dd_pc_ui.Ui_Form):
             self.COMOpenButton.setStyleSheet('QPushButton {background-color: seagreen}')
         else:
             self.COMOpenButton.setStyleSheet('QPushButton {background-color: salmon}')
+        self.StateMessage.setText(self.oai_dd.error_string)
         pass
 
+    def graph_window_open(self):
+        self.GraphWindow.show()
 
-def main():
+    # Переопределение метода closeEvent, для перехвата события закрытия окна
+    def closeEvent(self, event):
+        self.GraphWindow.close()
+
+
+if __name__ == '__main__':  # Если мы запускаем файл напрямую, а не импортируем
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
     window = MainWindow()  # Создаём объект класса ExampleApp
     window.show()  # Показываем окно
     app.exec_()  # и запускаем приложение
-
-
-if __name__ == '__main__':  # Если мы запускаем файл напрямую, а не импортируем
-    main()  # то запускаем функцию main()

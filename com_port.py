@@ -1,27 +1,54 @@
 import serial
 import serial.tools.list_ports
 import my_crc16
+import time
 
 
 class OaiDDData:
     def __init__(self):
         self.adc_data = [0, 0, 0, 0]
         self.dac_data = 0
+        self.names = ["Время, с",
+                      "АЦП 1",
+                      "АЦП 2",
+                      "АЦП 3",
+                      "АЦП 4",
+                      "ЦАП 1",
+                      ]
+        self.data = []
+        self.graph_data = None
 
     def create_table_data(self):
-        name = ["АЦП 1",
-                "АЦП 2",
-                "АЦП 3",
-                "АЦП 4",
-                "ЦАП 1",
-                ]
-        data = ["%d" % self.adc_data[0],
-                "%d" % self.adc_data[1],
-                "%d" % self.adc_data[2],
-                "%d" % self.adc_data[3],
-                "%d" % self.dac_data,
-                ]
-        return [[name[i], data[i]] for i in range(len(name))]
+        self.data = ["%.3f" % time.clock(),
+                     "%d" % self.adc_data[0],
+                     "%d" % self.adc_data[1],
+                     "%d" % self.adc_data[2],
+                     "%d" % self.adc_data[3],
+                     "%d" % self.dac_data,
+                     ]
+        # print("adc1 - 0x%04X" % self.adc_data[0], "adc2 - 0x%04X" % self.adc_data[1],)
+        self.create_graph_data()
+        return [[self.names[i], self.data[i]] for i in range(len(self.names))]
+
+    def create_graph_data(self):
+        if self.graph_data is None:
+            self.graph_data = []
+            for name in self.names[1:]:
+                self.graph_data.append([name, [], []])
+        else:
+            for i in range(0, len(self.names)-1):
+                self.graph_data[i][1].append(float(self.data[0]))
+                self.graph_data[i][2].append(float(self.data[i+1]))
+        while len(self.graph_data) > 10000:
+            self.graph_data.pop(0)
+
+    def reset_graph_data(self):
+        self.graph_data = []
+        for name in self.names:
+            self.graph_data.append([name, [], []])
+
+    def __str__(self):
+        pass
 
 
 class OaiDdSerial(serial.Serial):
@@ -54,21 +81,26 @@ class OaiDdSerial(serial.Serial):
                 self.data = kw.pop(key)
             else:
                 pass
+        self.error_string = "No error"
 
     def open_id(self):  # функция для установки связи с КПА
         com_list = serial.tools.list_ports.comports()
         for com in com_list:
-            print(com)
+            # print(com)
             for serial_number in self.serial_numbers:
-                print(com.serial_number, serial_number)
+                # print(com.serial_number, serial_number)
                 if com.serial_number is not None:
                     if com.serial_number.find(serial_number) >= 0:
                         # print(com.device)
                         self.port = com.device
-                        self.open()
-                    self.state = 0x01
+                        try:
+                            self.open()
+                        except serial.serialutil.SerialException as error:
+                            self.error_string = str(error)
+                    self.state = 1
+                    self.error_string = "Переподключение успешно"
                     return True
-        self.state = 0x00
+        self.state = 0
         return False
         pass
 
@@ -96,15 +128,18 @@ class OaiDdSerial(serial.Serial):
         crc16 = my_crc16.calc(com_data, len(com_data))
         com_data.extend([(crc16 >> 8) & 0xFF, (crc16 >> 0) & 0xFF])
         if self.is_open:
-            self.write(bytes(com_data))
-            self.row_data = b""
             try:
+                self.write(bytes(com_data))
+                self.row_data = b""
                 self.row_data = self.read(size=answer_leng)
-            except serial.serialutil.SerialException:
-                pass
+            except serial.serialutil.SerialException as error:
+                self.error_string = str(error)
+                self.close()
+                self.state = 0
             self.parcing()
         else:
             self.state = 0
+            self.open_id()
 
     def parcing(self):
         if len(self.row_data) > 5:
