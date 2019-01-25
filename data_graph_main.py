@@ -27,7 +27,7 @@ class MainWindow(QMainWindow, data_graph.Ui_Form):
         layout.addWidget(self.canvas)
         self.graphicsViews.setLayout(layout)
         #
-        self.restartButton.clicked.connect(self.plot)
+        # self.restartButton.clicked.connect(self.plot)
         self.pauseButton.toggled.connect(self.pause_set_clr)
 
     def pause_set_clr(self, checked):
